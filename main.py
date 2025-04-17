@@ -1,8 +1,17 @@
-from fastapi import FastAPI, Response
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, ImageDraw, ImageFont
+from fastapi import FastAPI, Response
 from io import BytesIO
 
 app = FastAPI()
+
+origins = ["https://app.glintsolar.com", "*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["GET"],
+)
 
 
 @app.get("/XYZ/{z}/{x}/{y}")
@@ -28,10 +37,10 @@ async def get_image(x: int, y: int, z: int):
         xy=(20, 72),
         text=f"{z}/{x}/{y}",
         fill="black",
-        font=ImageFont.truetype("OpenSans_SemiCondensed-Regular.ttf",32),
+        font=ImageFont.truetype("OpenSans_SemiCondensed-Regular.ttf", 32),
     )
 
-    if z>0:
+    if z > 0:
         draw.text(
             xy=(10, 120),
             text=f"TMS (default mapproxy),",
@@ -45,11 +54,11 @@ async def get_image(x: int, y: int, z: int):
             font=ImageFont.truetype("OpenSans_SemiCondensed-Regular.ttf", 24),
         )
         draw.text(
-        xy=(20, 190),
-        text=f"{z-1}/{x}/{2**z-1-y}",
-        fill="black",
-        font=ImageFont.truetype("OpenSans_SemiCondensed-Regular.ttf",32),
-    )
+            xy=(20, 190),
+            text=f"{z-1}/{x}/{2**z-1-y}",
+            fill="black",
+            font=ImageFont.truetype("OpenSans_SemiCondensed-Regular.ttf", 32),
+        )
 
     border_width = 2
     draw.rectangle([(0, 0), (256, 256)], outline="red", width=border_width)
